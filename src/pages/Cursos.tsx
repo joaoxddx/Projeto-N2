@@ -1,7 +1,7 @@
 import { Card } from '../components/Card';
 
 const Cursos = () => {
-  // Mock data for listing courses
+
   const cursosCadastrados = [
     { id: 1, nome: "Introdução ao React" },
     { id: 2, nome: "Desenvolvimento Web Avançado" },

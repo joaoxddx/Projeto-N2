@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Compass, List, Play, Users, CreditCard, Award, Home } from 'lucide-react';
+import { BookOpen, Compass, List, Play, Users, CreditCard, Award } from 'lucide-react';
 import './Navbar.css';
 
 const Navbar = () => {

@@ -1,0 +1,195 @@
+:root {
+    --primary-color: #4F46E5; /* Indigo 600 */
+    --primary-hover: #4338CA;
+    --secondary-color: #10B981; /* Emerald 500 */
+    --dark-bg: #111827; /* Gray 900 */
+    --dark-card: #1F2937; /* Gray 800 */
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --border-color: #374151;
+    --input-bg: rgba(255,255,255,0.05);
+    --input-text: #fff;
+    --input-focus-bg: rgba(255,255,255,0.1);
+}
+
+[data-theme="light"] {
+    --dark-bg: #F3F4F6; /* Gray 100 */
+    --dark-card: #FFFFFF; /* White */
+    --text-main: #111827; /* Gray 900 */
+    --text-muted: #4B5563; /* Gray 600 */
+    --border-color: #E5E7EB; /* Gray 200 */
+    --input-bg: #F9FAFB;
+    --input-text: #111827;
+    --input-focus-bg: #F3F4F6;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Premium Utilities */
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 8px;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    border-radius: 8px;
+}
+
+.btn-secondary:hover {
+    background-color: #059669; /* Emerald 600 */
+    border-color: #059669;
+}
+
+/* Card Styling */
+.card-custom {
+    background-color: var(--dark-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-custom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border-color: var(--primary-color);
+}
+
+.card-custom .card-title {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.card-custom .card-text {
+    color: var(--text-muted);
+}
+
+/* Navbar Tuning */
+.navbar-custom {
+    background-color: rgba(17, 24, 39, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #fff !important;
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand span {
+    color: var(--primary-color);
+}
+
+.nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #fff !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-white-50 {
+    color: #E5E7EB !important; /* Gray 200, mais visível que 50% alpha */
+}
+
+/* Forms */
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--input-text);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--input-focus-bg);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+    color: var(--input-text);
+}
+
+.form-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+option {
+    background-color: var(--dark-card);
+    color: var(--text-main);
+}
+
+/* Table Dark */
+.table-dark {
+    --bs-table-bg: var(--dark-card);
+    --bs-table-color: var(--text-main);
+    --bs-table-striped-bg: var(--input-bg);
+    --bs-table-hover-color: var(--text-main);
+    --bs-table-hover-bg: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-main);
+}
+
+/* Glassmorphism Hero */
+.hero-section {
+    position: relative;
+    padding: 100px 0;
+    overflow: hidden;
+}
+
+.hero-bg-gradient {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(79,70,229,0.15) 0%, var(--dark-bg) 50%);
+    z-index: -1;
+}
