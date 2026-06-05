@@ -9,35 +9,37 @@ export const CertificadoPages = () => {
     const [curso, setCurso] = useState<any>(null);
 
     useEffect(() => {
-        ServicoArmazenamento.init();
-        const params = new URLSearchParams(location.search);
-        let certId = params.get('id');
+        const fetchCertificado = async () => {
+            const params = new URLSearchParams(location.search);
+            let certId = params.get('id');
 
-        // Se veio de sala de aula e quer emitir, a gente gera um mock
-        if (!certId && params.get('curso')) {
-            const userJson = localStorage.getItem('usuarioLogado');
-            if (userJson) {
-                const u = JSON.parse(userJson);
-                const novoCert = {
-                    ID_Certificado: Date.now(),
-                    ID_Usuario: u.ID_Usuario,
-                    ID_Curso: parseInt(params.get('curso')!),
-                    CodigoVerificacao: 'CERT-' + Math.random().toString(36).substring(7).toUpperCase(),
-                    DataEmissao: new Date().toISOString()
-                };
-                ServicoArmazenamento.insert('Certificados', novoCert);
-                certId = novoCert.ID_Certificado.toString();
+            // Se veio de sala de aula e quer emitir, a gente gera um mock
+            if (!certId && params.get('curso')) {
+                const userJson = localStorage.getItem('usuarioLogado');
+                if (userJson) {
+                    const u = JSON.parse(userJson);
+                    const novoCert = {
+                        ID_Certificado: 0,
+                        ID_Usuario: u.ID_Usuario,
+                        ID_Curso: parseInt(params.get('curso')!),
+                        CodigoVerificacao: 'CERT-' + Math.random().toString(36).substring(7).toUpperCase(),
+                        DataEmissao: new Date().toISOString()
+                    };
+                    const savedCert = await ServicoArmazenamento.insert('Certificados', novoCert);
+                    certId = savedCert.ID_Certificado.toString();
+                }
             }
-        }
 
-        if (certId) {
-            const cert = ServicoArmazenamento.getById('Certificados', 'ID_Certificado', parseInt(certId));
-            if (cert) {
-                setCertificado(cert);
-                setUsuario(ServicoArmazenamento.getById('Usuarios', 'ID_Usuario', cert.ID_Usuario));
-                setCurso(ServicoArmazenamento.getById('Cursos', 'ID_Curso', cert.ID_Curso));
+            if (certId) {
+                const cert = await ServicoArmazenamento.getById('Certificados', 'ID_Certificado', parseInt(certId));
+                if (cert) {
+                    setCertificado(cert);
+                    setUsuario(await ServicoArmazenamento.getById('Usuarios', 'ID_Usuario', cert.ID_Usuario));
+                    setCurso(await ServicoArmazenamento.getById('Cursos', 'ID_Curso', cert.ID_Curso));
+                }
             }
-        }
+        };
+        fetchCertificado();
     }, [location]);
 
     if (!certificado || !usuario || !curso) {

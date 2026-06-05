@@ -16,14 +16,14 @@ export const PagamentoPages = () => {
         const queryParams = new URLSearchParams(location.search);
         const planoId = queryParams.get('plano');
         
-        ServicoArmazenamento.init();
         if (planoId) {
-            const p = ServicoArmazenamento.getById('Planos', 'ID_Plano', planoId);
-            setPlano(p);
+            ServicoArmazenamento.getById('Planos', 'ID_Plano', planoId).then(p => {
+                setPlano(p);
+            });
         }
     }, [location]);
 
-    const handlePagamento = (e: React.FormEvent) => {
+    const handlePagamento = async (e: React.FormEvent) => {
         e.preventDefault();
         
         const userJson = localStorage.getItem('usuarioLogado');
@@ -37,14 +37,14 @@ export const PagamentoPages = () => {
         const user = JSON.parse(userJson);
 
         // Simulando delay de gateway de pagamento
-        setTimeout(() => {
+        setTimeout(async () => {
             // Criar Assinatura
             const novaAssinatura = new Assinatura(0, user.ID_Usuario, plano.ID_Plano);
-            const assinSalva = ServicoArmazenamento.insert('Assinaturas', novaAssinatura);
+            const assinSalva = await ServicoArmazenamento.insert('Assinaturas', novaAssinatura);
 
             // Criar Pagamento
             const novoPagamento = new Pagamento(0, assinSalva.ID_Assinatura, plano.Preco, null, metodo, 'TRANS_' + Math.floor(Math.random() * 1000000));
-            ServicoArmazenamento.insert('Pagamentos', novoPagamento);
+            await ServicoArmazenamento.insert('Pagamentos', novoPagamento);
 
             setLoading(false);
             navigate('/painel_aluno');

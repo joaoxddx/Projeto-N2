@@ -1,0 +1,695 @@
+{
+  "usuarios": [
+    {
+      "ID_Usuario": 0,
+      "NomeCompleto": "João Pedro Gomes",
+      "Email": "jgomesbreta@admin.com",
+      "SenhaHash": "123456",
+      "DataCadastro": "2026-06-04T18:45:44.206Z",
+      "Role": "admin",
+      "id": "CaqO6UYkWes"
+    },
+    {
+      "ID_Usuario": 1780599169960,
+      "NomeCompleto": "joao pedro ",
+      "Email": "joaopedro@aluno.com",
+      "SenhaHash": "123456",
+      "DataCadastro": "2026-06-04T18:52:49.959Z",
+      "Role": "student",
+      "id": "peKWjbKtU0g"
+    }
+  ],
+  "categorias": [
+    {
+      "id": "1",
+      "Nome": "Desenvolvimento Web",
+      "Descricao": "Cursos focados em tecnologias frontend e backend."
+    },
+    {
+      "id": "2",
+      "Nome": "Design",
+      "Descricao": "Cursos de UI/UX e ferramentas de design."
+    },
+    {
+      "ID_Categoria": 1780667977575,
+      "Nome": "Nova categoria teste",
+      "Descricao": "Nova categoria Teste\n",
+      "id": "nEGvVrM9AfQ"
+    }
+  ],
+  "cursos": [
+    {
+      "ID_Curso": 1,
+      "Titulo": "React Zero ao PRO",
+      "Descricao": "Aprenda a criar interfaces dinâmicas com React e TypeScript.",
+      "ID_Instrutor": 0,
+      "ID_Categoria": 1,
+      "Nivel": "Intermediário",
+      "DataPublicacao": "2026-06-05T14:01:18.187Z",
+      "TotalAulas": 0,
+      "TotalHoras": 0,
+      "ImgUrl": "https://cdn.evg.gov.br/cursos/198_EVG/banner.svg",
+      "id": "1"
+    },
+    {
+      "ID_Curso": 1780603696201,
+      "Titulo": "Teste 2",
+      "Descricao": "Teste 2",
+      "ID_Instrutor": "CaqO6UYkWes",
+      "ID_Categoria": 2,
+      "Nivel": "Intermediário",
+      "DataPublicacao": "2026-06-04T20:08:16.201Z",
+      "TotalAulas": 0,
+      "TotalHoras": 0,
+      "ImgUrl": "https://via.placeholder.com/300x200?text=Curso",
+      "id": "yGAWKxp9H_I"
+    }
+  ],
+  "modulos": [
+    {
+      "id": "1",
+      "ID_Curso": 1,
+      "Titulo": "Fundamentos do React",
+      "Ordem": 1
+    },
+    {
+      "id": "2",
+      "ID_Curso": 1,
+      "Titulo": "Trabalhando com APIs e JSON Server",
+      "Ordem": 2
+    },
+    {
+      "ID_Modulo": 0,
+      "ID_Curso": "1",
+      "Titulo": "Teste",
+      "Ordem": 4,
+      "id": "JaRn2g9WGs0"
+    },
+    {
+      "ID_Modulo": 0,
+      "ID_Curso": "1",
+      "Titulo": "Teste",
+      "Ordem": 2,
+      "id": "t_1tKSZ97BI"
+    },
+    {
+      "ID_Modulo": 0,
+      "ID_Curso": "1",
+      "Titulo": "TEste",
+      "Ordem": 3,
+      "id": "Oj2wDsFNC3g"
+    },
+    {
+      "ID_Modulo": 1780599978244,
+      "ID_Curso": "1",
+      "Titulo": "teste",
+      "Ordem": 2,
+      "id": "44-ACVoQe_o"
+    },
+    {
+      "ID_Modulo": 1780599982458,
+      "ID_Curso": "1",
+      "Titulo": "teste",
+      "Ordem": 3,
+      "id": "icJAfJqV1i4"
+    },
+    {
+      "ID_Modulo": 1780600172916,
+      "ID_Curso": "1",
+      "Titulo": "teste",
+      "Ordem": 2,
+      "id": "qWdsxTbu7k4"
+    },
+    {
+      "ID_Modulo": 1780601222912,
+      "ID_Curso": 1,
+      "Titulo": "teste",
+      "Ordem": 4,
+      "id": "laYqacXF8S8"
+    },
+    {
+      "ID_Modulo": 1780603474375,
+      "ID_Curso": 1,
+      "Titulo": "Modulo 4",
+      "Ordem": 3,
+      "id": "JxFaZsHIRwI"
+    },
+    {
+      "ID_Modulo": 1780603625562,
+      "ID_Curso": 1,
+      "Titulo": "Modulo 5",
+      "Ordem": 5,
+      "id": "bI0AvazEKsM"
+    },
+    {
+      "ID_Modulo": 1780603717047,
+      "ID_Curso": 1780603696201,
+      "Titulo": "Modulo 1",
+      "Ordem": 1,
+      "id": "8FtvOINmS3o"
+    },
+    {
+      "ID_Modulo": 1780667914651,
+      "ID_Curso": 1780603696201,
+      "Titulo": "Algum",
+      "Ordem": 2,
+      "id": "-B4UuC4GejE"
+    }
+  ],
+  "aulas": [
+    {
+      "id": "1",
+      "ID_Modulo": 1,
+      "Titulo": "O que é um Componente?",
+      "TipoConteudo": "Vídeo",
+      "URL_Conteudo": "https://video.url/aula1",
+      "DuracaoMinutos": 15,
+      "Ordem": 1
+    },
+    {
+      "id": "2",
+      "ID_Modulo": 2,
+      "Titulo": "Configurando o JSON Server",
+      "TipoConteudo": "Texto",
+      "URL_Conteudo": "https://texto.url/aula2",
+      "DuracaoMinutos": 10,
+      "Ordem": 1
+    },
+    {
+      "ID_Aula": 0,
+      "ID_Modulo": 1,
+      "Titulo": "Teste",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 13,
+      "Ordem": 1,
+      "id": "leqdBIUKBrg"
+    },
+    {
+      "ID_Aula": 0,
+      "ID_Modulo": 1,
+      "Titulo": "Teste algum",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 3,
+      "id": "MXVHbNylXmA"
+    },
+    {
+      "ID_Aula": 0,
+      "ID_Modulo": 1,
+      "Titulo": "teste aula",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 2,
+      "id": "jl2J_kx6Rww"
+    },
+    {
+      "ID_Aula": 0,
+      "ID_Modulo": 1,
+      "Titulo": "teste segundo numero",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 5,
+      "id": "tpdPVLnvZWg"
+    },
+    {
+      "ID_Aula": 1780601239138,
+      "ID_Modulo": 1,
+      "Titulo": "teste modulo",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 23,
+      "Ordem": 3,
+      "id": "Ax4OpdPEZCY"
+    },
+    {
+      "ID_Aula": 1780601496524,
+      "ID_Modulo": 1,
+      "Titulo": "teste4",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 9,
+      "id": "AuPYBq2FsBk"
+    },
+    {
+      "ID_Aula": 1780601520027,
+      "ID_Modulo": 1,
+      "Titulo": "teste 4",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 3,
+      "id": "rae1M7_RHJA"
+    },
+    {
+      "ID_Aula": 1780601531926,
+      "ID_Modulo": 1,
+      "Titulo": "teste5",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 3,
+      "id": "iMkYyGQZUEY"
+    },
+    {
+      "ID_Aula": 1780601548071,
+      "ID_Modulo": 2,
+      "Titulo": "teste6",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 1,
+      "id": "mENiWJcaUGw"
+    },
+    {
+      "ID_Aula": 1780601926974,
+      "ID_Modulo": 1780601222912,
+      "Titulo": "trabalho",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 0,
+      "id": "OSTy9DaEDoc"
+    },
+    {
+      "ID_Aula": 1780601949237,
+      "ID_Modulo": 1780601222912,
+      "Titulo": "teste",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 0,
+      "id": "h-5u5e3rEeY"
+    },
+    {
+      "ID_Aula": 1780603639666,
+      "ID_Modulo": 1780603625562,
+      "Titulo": "TEste modulo 5",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 1,
+      "id": "F_oajxNUVCw"
+    },
+    {
+      "ID_Aula": 1780603678362,
+      "ID_Modulo": 1780603625562,
+      "Titulo": "modulo 5 teste 2",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 15,
+      "Ordem": 0,
+      "id": "uKR9UxFlb8o"
+    },
+    {
+      "ID_Aula": 1780603727146,
+      "ID_Modulo": 1780603717047,
+      "Titulo": "Teste modulo 1",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 14,
+      "Ordem": 3,
+      "id": "yO3quBPYiMI"
+    },
+    {
+      "ID_Aula": 1780667925707,
+      "ID_Modulo": 1780667914651,
+      "Titulo": "TEste algum",
+      "TipoConteudo": "Video",
+      "DuracaoMinutos": 10,
+      "Ordem": 99,
+      "id": "JKqTDJXsOwM"
+    }
+  ],
+  "matriculas": [
+    {
+      "id": "1",
+      "ID_Usuario": 2,
+      "ID_Curso": 1,
+      "DataMatricula": "2023-10-21T09:00:00Z",
+      "DataConclusao": null
+    },
+    {
+      "ID_Matricula": 1780599181623,
+      "ID_Usuario": "peKWjbKtU0g",
+      "ID_Curso": "1",
+      "DataMatricula": "2026-06-04T18:53:01.623Z",
+      "DataConclusao": null,
+      "id": "7oW-2NMbOTs"
+    },
+    {
+      "ID_Matricula": 1780599943786,
+      "ID_Usuario": "peKWjbKtU0g",
+      "ID_Curso": 1,
+      "DataMatricula": "2026-06-04T19:05:43.786Z",
+      "DataConclusao": null,
+      "id": "hFnl22sf00w"
+    },
+    {
+      "ID_Matricula": 1780668096087,
+      "ID_Usuario": 1780599169960,
+      "ID_Curso": 1780603696201,
+      "DataMatricula": "2026-06-05T14:01:36.087Z",
+      "DataConclusao": null,
+      "id": "CZ1KGxCjv8E"
+    },
+    {
+      "ID_Matricula": 1780668721944,
+      "ID_Usuario": 0,
+      "ID_Curso": 1,
+      "DataMatricula": "2026-06-05T14:12:01.944Z",
+      "DataConclusao": null,
+      "id": "N-axBq8NF9A"
+    },
+    {
+      "ID_Matricula": 1780669457560,
+      "ID_Usuario": 0,
+      "ID_Curso": 1780603696201,
+      "DataMatricula": "2026-06-05T14:24:17.560Z",
+      "DataConclusao": null,
+      "id": "ctbZQhodO_A"
+    }
+  ],
+  "progresso_aulas": [
+    {
+      "id": "1",
+      "ID_Usuario": 2,
+      "ID_Aula": 1,
+      "DataConclusao": "2023-10-22T10:30:00Z",
+      "Status": "Concluído"
+    }
+  ],
+  "avaliacoes": [
+    {
+      "id": "1",
+      "ID_Usuario": 2,
+      "ID_Curso": 1,
+      "Nota": 5,
+      "Comentario": "Excelente curso, muito didático!",
+      "DataAvaliacao": "2023-11-01T15:20:00Z"
+    }
+  ],
+  "trilhas": [
+    {
+      "ID_Trilha": 1,
+      "Titulo": "Trilha Frontend Developer",
+      "Descricao": "Caminho completo para se tornar um desenvolvedor frontend.",
+      "ID_Categoria": 1,
+      "id": "1"
+    },
+    {
+      "ID_Trilha": "kLQW9J95WdE",
+      "Titulo": "Trabalho",
+      "Descricao": "Teste Trilha",
+      "ID_Categoria": 2,
+      "id": "kLQW9J95WdE"
+    },
+    {
+      "ID_Trilha": 1780670110074,
+      "Titulo": "Teste Rastreamento",
+      "Descricao": "Teste Rastreamento",
+      "ID_Categoria": 1,
+      "id": "lBjc8HwDBjA"
+    }
+  ],
+  "trilhas_cursos": [
+    {
+      "id": "1",
+      "ID_Trilha": 1,
+      "ID_Curso": 1,
+      "Ordem": 1
+    },
+    {
+      "ID_Trilha": "Ocq8DBNjIpc",
+      "ID_Curso": "1",
+      "Ordem": 1,
+      "id": "mUhsZvcboSU"
+    },
+    {
+      "ID_Trilha": "Yal2ZXzaUO4",
+      "ID_Curso": "1",
+      "Ordem": 1,
+      "id": "7nRWHMPLXoQ"
+    },
+    {
+      "ID_Trilha": 1780669429814,
+      "ID_Curso": 1,
+      "Ordem": 1,
+      "id": "qbY4pjAT4rM"
+    },
+    {
+      "ID_Trilha": 1,
+      "ID_Curso": 1,
+      "Ordem": 1,
+      "id": "-Nus_5D1t8Y"
+    },
+    {
+      "ID_Trilha": 1,
+      "ID_Curso": 1,
+      "Ordem": 2,
+      "id": "TzWP3dYlJ2k"
+    },
+    {
+      "ID_Trilha": 1780669748999,
+      "ID_Curso": 1,
+      "Ordem": 1,
+      "id": "CA9cGDazO_g"
+    },
+    {
+      "ID_Trilha": "kLQW9J95WdE",
+      "ID_Curso": 1,
+      "Ordem": 1,
+      "id": "EgTBDtyzOxo"
+    },
+    {
+      "ID_Trilha": "kLQW9J95WdE",
+      "ID_Curso": 1780603696201,
+      "Ordem": 2,
+      "id": "8UCdZS_-I2Y"
+    }
+  ],
+  "certificados": [
+    {
+      "id": "1",
+      "ID_Usuario": 2,
+      "ID_Curso": 1,
+      "ID_Trilha": null,
+      "CodigoVerificacao": "CERT-REACT-2023-ABC",
+      "DataEmissao": "2023-11-15T18:00:00Z"
+    }
+  ],
+  "planos": [
+    {
+      "id": "1",
+      "Nome": "Plano Mensal",
+      "Descricao": "Acesso a todos os cursos por 1 mês",
+      "Preco": 49.9,
+      "DuracaoMeses": 1
+    },
+    {
+      "id": "2",
+      "Nome": "Plano Anual",
+      "Descricao": "Acesso a todos os cursos com desconto anual",
+      "Preco": 499,
+      "DuracaoMeses": 12
+    },
+    {
+      "ID_Plano": 1780599434584,
+      "Nome": "JOoa",
+      "Descricao": "joaooaoo",
+      "Preco": 5,
+      "DuracaoMeses": 10,
+      "id": "P5aZT7QFDTk"
+    }
+  ],
+  "assinaturas": [
+    {
+      "id": "1",
+      "ID_Usuario": 2,
+      "ID_Plano": 2,
+      "DataInicio": "2023-10-20T00:00:00Z",
+      "DataFim": "2024-10-20T23:59:59Z"
+    },
+    {
+      "ID_Assinatura": 1780599963974,
+      "ID_Usuario": "peKWjbKtU0g",
+      "ID_Plano": "P5aZT7QFDTk",
+      "DataInicio": "2026-06-04T19:06:03.974Z",
+      "DataFim": null,
+      "id": "F76sAYDN1aU"
+    },
+    {
+      "ID_Assinatura": 1780670172352,
+      "ID_Usuario": 0,
+      "ID_Plano": 1780599434584,
+      "DataInicio": "2026-06-05T14:36:12.352Z",
+      "DataFim": null,
+      "id": "0WA5XcY3B1w"
+    }
+  ],
+  "pagamentos": [
+    {
+      "id": "1",
+      "ID_Assinatura": 1,
+      "ValorPago": 499,
+      "DataPagamento": "2023-10-20T14:20:00Z",
+      "MetodoPagamento": "Cartão de Crédito",
+      "Id_Transacao_Gateway": "txn_9876543210"
+    },
+    {
+      "ID_Pagamento": 1780599963982,
+      "ID_Assinatura": "F76sAYDN1aU",
+      "ValorPago": 566,
+      "DataPagamento": "2026-06-04T19:06:03.982Z",
+      "MetodoPagamento": "pix",
+      "Id_Transacao_Gateway": "TRANS_442984",
+      "id": "b-7wjiG31o0"
+    },
+    {
+      "ID_Pagamento": 1780670172371,
+      "ID_Assinatura": 1780670172352,
+      "ValorPago": 5,
+      "DataPagamento": "2026-06-05T14:36:12.371Z",
+      "MetodoPagamento": "pix",
+      "Id_Transacao_Gateway": "TRANS_587317",
+      "id": "eoqnGu8MyQ0"
+    }
+  ],
+  "carreiras": [
+    {
+      "ID_Carreira": "J-H3VLHupD8",
+      "Titulo": "teste",
+      "Descricao": "teste",
+      "id": "J-H3VLHupD8"
+    },
+    {
+      "ID_Carreira": 1780670137022,
+      "Titulo": "Teste carreira",
+      "Descricao": "Teste Carreira",
+      "id": "B-SGCNI-2OU"
+    }
+  ],
+  "carreiras_trilhas": [
+    {
+      "ID_Carreira": "Kwl39Ml3x4c",
+      "ID_Trilha": "1",
+      "Ordem": 1,
+      "id": "7YVN-fTsM9c"
+    },
+    {
+      "ID_Carreira": "OVQ8PyP7Ttw",
+      "ID_Trilha": "1",
+      "Ordem": 1,
+      "id": "l6oMNQ_ynQc"
+    },
+    {
+      "ID_Carreira": 1780603749918,
+      "ID_Trilha": 1,
+      "Ordem": 1,
+      "id": "js69zQbhpmU"
+    },
+    {
+      "ID_Carreira": "Kwl39Ml3x4c",
+      "ID_Trilha": "1",
+      "Ordem": 1,
+      "id": "qQxmbRRb5eI"
+    },
+    {
+      "ID_Carreira": "Kwl39Ml3x4c",
+      "ID_Trilha": 1,
+      "Ordem": 2,
+      "id": "cEnMVHoTtl0"
+    },
+    {
+      "ID_Carreira": "Kwl39Ml3x4c",
+      "ID_Trilha": "Ocq8DBNjIpc",
+      "Ordem": 3,
+      "id": "zdjnqo-4GEY"
+    },
+    {
+      "ID_Carreira": 1780668055914,
+      "ID_Trilha": "Ocq8DBNjIpc",
+      "Ordem": 1,
+      "id": "TcVV9wOOzSU"
+    },
+    {
+      "ID_Carreira": 1780668055914,
+      "ID_Trilha": 0,
+      "Ordem": 2,
+      "id": "Wa97E-rt65w"
+    },
+    {
+      "ID_Carreira": 1780668482244,
+      "ID_Trilha": 0,
+      "Ordem": 1,
+      "id": "8GdN6T-5Q44"
+    },
+    {
+      "ID_Carreira": 1780668482244,
+      "ID_Trilha": 1780669429814,
+      "Ordem": 2,
+      "id": "FNpWZQp3zPk"
+    },
+    {
+      "ID_Carreira": "J-H3VLHupD8",
+      "ID_Trilha": 1,
+      "Ordem": 1,
+      "id": "XHvUcRaAMLE"
+    },
+    {
+      "ID_Carreira": "J-H3VLHupD8",
+      "ID_Trilha": 1780670110074,
+      "Ordem": 2,
+      "id": "v3ds6OhvMK4"
+    },
+    {
+      "ID_Carreira": "J-H3VLHupD8",
+      "ID_Trilha": "kLQW9J95WdE",
+      "Ordem": 3,
+      "id": "A55yekDdAAU"
+    },
+    {
+      "ID_Carreira": 1780670137022,
+      "ID_Trilha": "kLQW9J95WdE",
+      "Ordem": 1,
+      "id": "nkn0qgwZroM"
+    },
+    {
+      "ID_Carreira": 1780670137022,
+      "ID_Trilha": 1,
+      "Ordem": 2,
+      "id": "rUSEM7Qx9OI"
+    }
+  ],
+  "matriculas_trilhas": [
+    {
+      "ID_MatriculaTrilha": 1780599943773,
+      "ID_Usuario": "peKWjbKtU0g",
+      "ID_Trilha": "1",
+      "id": "ilGtrnfc5rM"
+    },
+    {
+      "ID_MatriculaTrilha": 1780668956858,
+      "ID_Usuario": 0,
+      "ID_Trilha": 0,
+      "id": "sFfmCik5k98"
+    },
+    {
+      "ID_MatriculaTrilha": 1780669457528,
+      "ID_Usuario": 0,
+      "ID_Trilha": 1,
+      "id": "hJ3a-LlndHc"
+    },
+    {
+      "ID_MatriculaTrilha": 1780670153389,
+      "ID_Usuario": 0,
+      "ID_Trilha": "kLQW9J95WdE",
+      "id": "XQApvJbJOMI"
+    }
+  ],
+  "matriculas_carreiras": [
+    {
+      "ID_MatriculaCarreira": 1780669364212,
+      "ID_Usuario": 0,
+      "ID_Carreira": 1780668482244,
+      "id": "C7EY6cVRb0k"
+    },
+    {
+      "ID_MatriculaCarreira": 1780670153362,
+      "ID_Usuario": 0,
+      "ID_Carreira": 1780670137022,
+      "id": "yns7-HTJgeo"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

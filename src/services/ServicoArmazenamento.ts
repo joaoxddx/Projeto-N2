@@ -1,127 +1,186 @@
-import { Plano, Categoria, Usuario, Curso, Avaliacao, Trilha, Carreira, CarreiraTrilha } from '../models/Entidades';
+import axios from 'axios';
+
+const API_URL = 'http://localhost:3001';
+
+// Helper to determine the ID key based on table name (app model)
+const getIdKey = (table: string): string => {
+    switch (table.toLowerCase()) {
+        case 'usuarios': return 'ID_Usuario';
+        case 'categorias': return 'ID_Categoria';
+        case 'cursos': return 'ID_Curso';
+        case 'modulos': return 'ID_Modulo';
+        case 'aulas': return 'ID_Aula';
+        case 'matriculas': return 'ID_Matricula';
+        case 'progresso_aulas': return 'id'; // Usually composed, we use default id for json-server
+        case 'avaliacoes': return 'ID_Avaliacao';
+        case 'trilhas': return 'ID_Trilha';
+        case 'trilhas_cursos': return 'id';
+        case 'certificados': return 'ID_Certificado';
+        case 'planos': return 'ID_Plano';
+        case 'assinaturas': return 'ID_Assinatura';
+        case 'pagamentos': return 'ID_Pagamento';
+        case 'carreiras': return 'ID_Carreira';
+        case 'carreiras_trilhas': return 'id';
+        case 'matriculas_trilhas': return 'ID_MatriculaTrilha';
+        case 'matriculas_carreiras': return 'ID_MatriculaCarreira';
+        default: return 'id';
+    }
+};
+
+const mapFromDb = (table: string, data: any) => {
+    if (!data) return data;
+    const idKey = getIdKey(table);
+    if (data.id && idKey !== 'id' && data[idKey] === undefined) {
+        const num = Number(data.id);
+        data[idKey] = isNaN(num) ? data.id : num; 
+    }
+    return data;
+};
+
+// Map from app format to db format
+const mapToDb = (table: string, data: any) => {
+    if (!data) return data;
+    const idKey = getIdKey(table);
+    if (data[idKey] && idKey !== 'id') {
+        data.id = String(data[idKey]); // json-server v1 expects string IDs, but accepts numbers for routing. we pass string.
+    }
+    return data;
+};
 
 export class ServicoArmazenamento {
-    static init() {
-        const defaultTables: Record<string, any[]> = {
-            'Usuarios': [],
-            'Categorias': [],
-            'Cursos': [],
-            'Modulos': [],
-            'Aulas': [],
-            'Matriculas': [],
-            'Progresso_Aulas': [],
-            'Avaliacoes': [],
-            'Trilhas': [],
-            'Trilhas_Cursos': [],
-            'Certificados': [],
-            'Planos': [],
-            'Assinaturas': [],
-            'Pagamentos': [],
-            'Carreiras': [],
-            'Carreiras_Trilhas': []
-        };
+    
+    // We keep init to not break signature, but it does nothing since json-server is pre-seeded
+    static async init() {
+        return;
+    }
 
-        for (const [table, defaultData] of Object.entries(defaultTables)) {
-            if (!localStorage.getItem(table)) {
-                localStorage.setItem(table, JSON.stringify(defaultData));
+    static async getAll(table: string): Promise<any[]> {
+        const route = table.toLowerCase();
+        try {
+            const response = await axios.get(`${API_URL}/${route}`);
+            return response.data.map((item: any) => mapFromDb(route, item));
+        } catch (error) {
+            console.error(`Error fetching all from ${route}:`, error);
+            return [];
+        }
+    }
+
+    static async getById(table: string, idKey: string, idValue: any): Promise<any> {
+        const route = table.toLowerCase();
+        try {
+            const response = await axios.get(`${API_URL}/${route}?${idKey}=${idValue}`);
+            if (response.data && response.data.length > 0) {
+                return mapFromDb(route, response.data[0]);
             }
-        }
-
-        // Seed Mock Data se vazio
-        this.seedMockData();
-    }
-
-    static seedMockData() {
-        const planos = this.getAll('Planos');
-        if (planos.length === 0) {
-            this.insert('Planos', new Plano(1, 'Basic', 'Acesso a 1 curso mensal', 29.90, 1));
-            this.insert('Planos', new Plano(2, 'Pro', 'Acesso ilimitado a todos os cursos', 89.90, 1));
-            this.insert('Planos', new Plano(3, 'Anual', 'Acesso ilimitado por 12 meses', 799.90, 12));
-        }
-
-        const categorias = this.getAll('Categorias');
-        if (categorias.length === 0) {
-            this.insert('Categorias', new Categoria(1, 'Programação', 'Cursos de lógica e desenvolvimento'));
-            this.insert('Categorias', new Categoria(2, 'Design', 'Cursos de UI/UX e Web Design'));
-        }
-
-        const usuarios = this.getAll('Usuarios');
-        if (usuarios.length === 0) {
-            this.insert('Usuarios', new Usuario(1, 'Administrador', 'admin@formapro.com', 'admin123', new Date().toISOString(), 'admin'));
-            this.insert('Usuarios', new Usuario(2, 'Estudante Teste', 'aluno@formapro.com', 'aluno123', new Date().toISOString(), 'student'));
-        }
-        
-        const cursos = this.getAll('Cursos');
-        if(cursos.length === 0){
-             this.insert('Cursos', new Curso(1, 'Lógica de Programação', 'Aprenda os fundamentos da programação com JavaScript.', 1, 1, 'Iniciante', null, 5, 10, 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80'));
-             this.insert('Cursos', new Curso(2, 'UI/UX Design', 'Princípios de design de interfaces.', 1, 2, 'Intermediário', null, 3, 5, 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80'));
-        }
-
-        const avaliacoes = this.getAll('Avaliacoes');
-        if (avaliacoes.length === 0) {
-            this.insert('Avaliacoes', new Avaliacao(1, 2, 1, 5, 'Curso excelente! Muito didático e direto ao ponto.', new Date().toISOString()));
-            this.insert('Avaliacoes', new Avaliacao(2, 2, 2, 4, 'Ótima base para iniciar no design. Gostei dos exemplos práticos.', new Date().toISOString()));
-        }
-
-        const carreiras = this.getAll('Carreiras');
-        if (carreiras.length === 0) {
-            this.insert('Carreiras', new Carreira(1, 'Desenvolvedor Full Stack', 'Formação completa do Front ao Backend.'));
-        }
-
-        const trilhas = this.getAll('Trilhas');
-        if (trilhas.length === 0) {
-            this.insert('Trilhas', new Trilha(1, 'Trilha Front-End Iniciante', 'Os primeiros passos com HTML, CSS e JS.', 1));
-            this.insert('Carreiras_Trilhas', new CarreiraTrilha(1, 1, 1)); // Adiciona trilha 1 na carreira 1
+            if (idKey !== 'id') {
+                try {
+                    const fallbackResponse = await axios.get(`${API_URL}/${route}/${idValue}`);
+                    if (fallbackResponse.data) {
+                        return mapFromDb(route, fallbackResponse.data);
+                    }
+                } catch (fallbackError) {
+                    // Ignora 404
+                }
+            }
+            return null;
+        } catch (error) {
+            console.error(`Error fetching by ID from ${route}:`, error);
+            return null;
         }
     }
 
-    static generateId(table: string): number {
-        const items = this.getAll(table);
-        if (items.length === 0) return 1;
-        
-        const idKey = Object.keys(items[0]).find(k => k.startsWith('ID_')) || 'id';
-        return Math.max(...items.map((i: any) => i[idKey])) + 1;
-    }
-
-    static getAll(table: string): any[] {
-        return JSON.parse(localStorage.getItem(table) || '[]');
-    }
-
-    static getById(table: string, idKey: string, idValue: any): any {
-        const items = this.getAll(table);
-        return items.find((i: any) => String(i[idKey]) === String(idValue)) || null;
-    }
-
-    static getByProperty(table: string, propName: string, propValue: any): any[] {
-         const items = this.getAll(table);
-         return items.filter((i: any) => String(i[propName]) === String(propValue));
-    }
-
-    static insert(table: string, data: any): any {
-        const items = this.getAll(table);
-        const idKey = Object.keys(data).find(k => k.startsWith('ID_'));
-        if (idKey && !data[idKey]) { 
-             data[idKey] = this.generateId(table);
+    static async getByProperty(table: string, propName: string, propValue: any): Promise<any[]> {
+        const route = table.toLowerCase();
+        try {
+            const response = await axios.get(`${API_URL}/${route}?${propName}=${propValue}`);
+            return response.data.map((item: any) => mapFromDb(route, item));
+        } catch (error) {
+            console.error(`Error fetching by property from ${route}:`, error);
+            return [];
         }
-        items.push(data);
-        localStorage.setItem(table, JSON.stringify(items));
-        return data;
     }
 
-    static update(table: string, idKey: string, idValue: any, newData: any): any {
-        const items = this.getAll(table);
-        const index = items.findIndex((i: any) => String(i[idKey]) === String(idValue));
-        if (index !== -1) {
-            items[index] = { ...items[index], ...newData };
-            localStorage.setItem(table, JSON.stringify(items));
-            return items[index];
+    static async insert(table: string, data: any): Promise<any> {
+        const route = table.toLowerCase();
+        try {
+            const dataToInsert = mapToDb(route, data);
+            
+            // Generate UUID if no ID is present, because JSON-Server v1 requires string IDs for POST if missing.
+            let generatedId = dataToInsert.id;
+            if (!generatedId || generatedId === 0 || generatedId === '0') {
+                 generatedId = Date.now().toString(); // simple numeric string id
+            } else {
+                 generatedId = String(generatedId);
+            }
+            dataToInsert.id = generatedId;
+
+            const idKey = getIdKey(table);
+            if (idKey !== 'id') {
+                const num = Number(generatedId);
+                dataToInsert[idKey] = isNaN(num) ? generatedId : num;
+            }
+
+            const response = await axios.post(`${API_URL}/${route}`, dataToInsert);
+            return mapFromDb(route, response.data);
+        } catch (error) {
+            console.error(`Error inserting into ${route}:`, error);
+            return null;
         }
-        return null;
     }
 
-    static delete(table: string, idKey: string, idValue: any): void {
-        let items = this.getAll(table);
-        items = items.filter((i: any) => String(i[idKey]) !== String(idValue));
-        localStorage.setItem(table, JSON.stringify(items));
+    static async update(table: string, idKey: string, idValue: any, newData: any): Promise<any> {
+        const route = table.toLowerCase();
+        try {
+            let targetId = null;
+            const getResponse = await axios.get(`${API_URL}/${route}?${idKey}=${idValue}`);
+            if (getResponse.data && getResponse.data.length > 0) {
+                targetId = getResponse.data[0].id;
+            } else if (idKey !== 'id') {
+                try {
+                    const fallbackResponse = await axios.get(`${API_URL}/${route}/${idValue}`);
+                    if (fallbackResponse.data) {
+                        targetId = fallbackResponse.data.id;
+                    }
+                } catch (e) {
+                    // Ignora 404
+                }
+            }
+
+            if (targetId) {
+                const dataToUpdate = mapToDb(route, newData);
+                dataToUpdate.id = targetId;
+                const response = await axios.put(`${API_URL}/${route}/${targetId}`, dataToUpdate);
+                return mapFromDb(route, response.data);
+            }
+            return null;
+        } catch (error) {
+            console.error(`Error updating ${route}:`, error);
+            return null;
+        }
+    }
+
+    static async delete(table: string, idKey: string, idValue: any): Promise<void> {
+        const route = table.toLowerCase();
+        try {
+            let targetId = null;
+            const getResponse = await axios.get(`${API_URL}/${route}?${idKey}=${idValue}`);
+            if (getResponse.data && getResponse.data.length > 0) {
+                targetId = getResponse.data[0].id;
+            } else if (idKey !== 'id') {
+                try {
+                    const fallbackResponse = await axios.get(`${API_URL}/${route}/${idValue}`);
+                    if (fallbackResponse.data) {
+                        targetId = fallbackResponse.data.id;
+                    }
+                } catch (e) {
+                    // Ignora 404
+                }
+            }
+            if (targetId) {
+                await axios.delete(`${API_URL}/${route}/${targetId}`);
+            }
+        } catch (error) {
+            console.error(`Error deleting from ${route}:`, error);
+        }
     }
 }

@@ -11,23 +11,29 @@ export const HomePages = () => {
     const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
 
     useEffect(() => {
-        ServicoArmazenamento.init();
-        setCursos(ServicoArmazenamento.getAll('Cursos'));
-        setCategorias(ServicoArmazenamento.getAll('Categorias'));
-        setPlanos(ServicoArmazenamento.getAll('Planos'));
-        
-        // Puxar avaliações com dados do usuário e curso
-        const avs = ServicoArmazenamento.getAll('Avaliacoes');
-        const avsFull = avs.map((av: any) => {
-            const user = ServicoArmazenamento.getById('Usuarios', 'ID_Usuario', av.ID_Usuario);
-            const course = ServicoArmazenamento.getById('Cursos', 'ID_Curso', av.ID_Curso);
-            return {
-                ...av,
-                NomeAluno: user ? user.NomeCompleto : 'Aluno Anônimo',
-                NomeCurso: course ? course.Titulo : 'Curso'
-            };
-        });
-        setAvaliacoes(avsFull);
+        const fetchData = async () => {
+            const cursosData = await ServicoArmazenamento.getAll('Cursos');
+            setCursos(cursosData);
+            
+            const categoriasData = await ServicoArmazenamento.getAll('Categorias');
+            setCategorias(categoriasData);
+            
+            const planosData = await ServicoArmazenamento.getAll('Planos');
+            setPlanos(planosData);
+            
+            const avs = await ServicoArmazenamento.getAll('Avaliacoes');
+            const avsFull = await Promise.all(avs.map(async (av: any) => {
+                const user = await ServicoArmazenamento.getById('Usuarios', 'ID_Usuario', av.ID_Usuario);
+                const course = await ServicoArmazenamento.getById('Cursos', 'ID_Curso', av.ID_Curso);
+                return {
+                    ...av,
+                    NomeAluno: user ? user.NomeCompleto : 'Aluno Anônimo',
+                    NomeCurso: course ? course.Titulo : 'Curso'
+                };
+            }));
+            setAvaliacoes(avsFull);
+        };
+        fetchData();
     }, []);
 
     const getCategoriaNome = (id: number) => {

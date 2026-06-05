@@ -15,10 +15,9 @@ export const LoginPages = () => {
 
     const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        ServicoArmazenamento.init();
-        const users = ServicoArmazenamento.getAll('Usuarios');
+        const users = await ServicoArmazenamento.getAll('Usuarios');
         const user = users.find((u: any) => u.Email === loginEmail && u.SenhaHash === loginSenha);
         
         if (user) {
@@ -33,10 +32,9 @@ export const LoginPages = () => {
         }
     };
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        ServicoArmazenamento.init();
-        const users = ServicoArmazenamento.getAll('Usuarios');
+        const users = await ServicoArmazenamento.getAll('Usuarios');
         
         if (users.some((u: any) => u.Email === regEmail)) {
             setAlertMsg({ type: 'danger', msg: 'Este email já está cadastrado.' });
@@ -44,7 +42,7 @@ export const LoginPages = () => {
         }
 
         const newUser = new Usuario(0, regNome, regEmail, regSenha, new Date().toISOString(), regRole);
-        ServicoArmazenamento.insert('Usuarios', newUser);
+        await ServicoArmazenamento.insert('Usuarios', newUser);
         setAlertMsg({ type: 'success', msg: 'Cadastro realizado com sucesso! Faça o login.' });
         setActiveTab('login');
     };

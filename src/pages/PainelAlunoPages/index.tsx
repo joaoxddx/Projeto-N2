@@ -21,6 +21,14 @@ export const PainelAlunoPages = () => {
     const [activeTab, setActiveTab] = useState('meus-cursos');
     const [showModal, setShowModal] = useState(false);
     const [modalTab, setModalTab] = useState('cursos');
+    const [trilhaAtiva, setTrilhaAtiva] = useState<any>(null);
+    const [carreiraAtiva, setCarreiraAtiva] = useState<any>(null);
+
+    const changeTab = (tab: string) => {
+        setActiveTab(tab);
+        setTrilhaAtiva(null);
+        setCarreiraAtiva(null);
+    };
 
     useEffect(() => {
         const userJson = localStorage.getItem('usuarioLogado');
@@ -31,23 +39,21 @@ export const PainelAlunoPages = () => {
         const user = JSON.parse(userJson);
         setUsuarioLogado(user);
 
-        ServicoArmazenamento.init();
         loadData(user.ID_Usuario);
     }, [navigate]);
 
     // Função de progresso simulado
     const getProgressoCurso = (idCurso: number, idUsuario: number) => {
-        // Mock consistente baseado nos IDs
         return ((idCurso * 37) + (idUsuario * 13)) % 100;
     };
 
-    const loadData = (userId: number) => {
-        const mats = ServicoArmazenamento.getByProperty('Matriculas', 'ID_Usuario', userId);
-        const todosCursos = ServicoArmazenamento.getAll('Cursos');
-        const todasTrilhas = ServicoArmazenamento.getAll('Trilhas');
-        const todasCarreiras = ServicoArmazenamento.getAll('Carreiras');
-        const trilhaCursos = ServicoArmazenamento.getAll('Trilhas_Cursos');
-        const carreiraTrilhas = ServicoArmazenamento.getAll('Carreiras_Trilhas');
+    const loadData = async (userId: number) => {
+        const mats = await ServicoArmazenamento.getByProperty('Matriculas', 'ID_Usuario', userId);
+        const todosCursos = await ServicoArmazenamento.getAll('Cursos');
+        const todasTrilhas = await ServicoArmazenamento.getAll('Trilhas');
+        const todasCarreiras = await ServicoArmazenamento.getAll('Carreiras');
+        const trilhaCursos = await ServicoArmazenamento.getAll('Trilhas_Cursos');
+        const carreiraTrilhas = await ServicoArmazenamento.getAll('Carreiras_Trilhas');
         
         const cursosJaMatriculadosIds = mats.map(m => m.ID_Curso);
 
@@ -59,8 +65,11 @@ export const PainelAlunoPages = () => {
         });
         setMatriculas(matriculasDetalhes);
 
-        const matsTrilhas = ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', userId).map((m: any) => m.ID_Trilha);
-        const matsCarreiras = ServicoArmazenamento.getByProperty('Matriculas_Carreiras', 'ID_Usuario', userId).map((m: any) => m.ID_Carreira);
+        const matsTrilhasRaw = await ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', userId);
+        const matsTrilhas = matsTrilhasRaw.map((m: any) => m.ID_Trilha);
+        
+        const matsCarreirasRaw = await ServicoArmazenamento.getByProperty('Matriculas_Carreiras', 'ID_Usuario', userId);
+        const matsCarreiras = matsCarreirasRaw.map((m: any) => m.ID_Carreira);
 
         // 2. Mapear Minhas Trilhas
         const alunoTrilhas: any[] = [];
@@ -68,16 +77,25 @@ export const PainelAlunoPages = () => {
 
         todasTrilhas.forEach(trilha => {
             if (matsTrilhas.includes(trilha.ID_Trilha)) {
-                const cursosDaTrilha = trilhaCursos.filter((tc: any) => tc.ID_Trilha === trilha.ID_Trilha).map((tc: any) => tc.ID_Curso);
+                // Remove duplicates using Set
+                const cursosDaTrilhaRaw = trilhaCursos.filter((tc: any) => String(tc.ID_Trilha) === String(trilha.ID_Trilha)).map((tc: any) => tc.ID_Curso);
+                const cursosDaTrilha = Array.from(new Set(cursosDaTrilhaRaw));
+
                 let progressoTrilha = 0;
+                let cursosDetalhados: any[] = [];
                 if (cursosDaTrilha.length > 0) {
                     let somaProgresso = 0;
-                    cursosDaTrilha.forEach((cId: number) => {
-                        if (cursosJaMatriculadosIds.includes(cId)) somaProgresso += getProgressoCurso(cId, userId);
+                    cursosDaTrilha.forEach((cId: any) => {
+                        const parsedId = Number(cId);
+                        const prog = getProgressoCurso(parsedId, userId);
+                        if (cursosJaMatriculadosIds.includes(parsedId)) somaProgresso += prog;
+                        
+                        const cur = todosCursos.find(c => String(c.ID_Curso) === String(cId));
+                        if (cur) cursosDetalhados.push({ ...cur, Progresso: cursosJaMatriculadosIds.includes(parsedId) ? prog : 0 });
                     });
                     progressoTrilha = Math.floor(somaProgresso / cursosDaTrilha.length);
                 }
-                alunoTrilhas.push({ ...trilha, Progresso: progressoTrilha });
+                alunoTrilhas.push({ ...trilha, Progresso: progressoTrilha, Cursos: cursosDetalhados });
             } else {
                 trilhasRestantes.push(trilha);
             }
@@ -91,17 +109,27 @@ export const PainelAlunoPages = () => {
 
         todasCarreiras.forEach(carreira => {
             if (matsCarreiras.includes(carreira.ID_Carreira)) {
-                const trilhasDaCarreira = carreiraTrilhas.filter((ct: any) => ct.ID_Carreira === carreira.ID_Carreira).map((ct: any) => ct.ID_Trilha);
+                // Remove duplicates using Set
+                const trilhasDaCarreiraRaw = carreiraTrilhas.filter((ct: any) => String(ct.ID_Carreira) === String(carreira.ID_Carreira)).map((ct: any) => ct.ID_Trilha);
+                const trilhasDaCarreira = Array.from(new Set(trilhasDaCarreiraRaw));
+
                 let progressoCarreira = 0;
+                let trilhasDetalhadas: any[] = [];
                 if (trilhasDaCarreira.length > 0) {
                     let somaProgresso = 0;
-                    trilhasDaCarreira.forEach((tId: number) => {
-                        const tInscrita = alunoTrilhas.find(at => at.ID_Trilha === tId);
-                        if (tInscrita) somaProgresso += tInscrita.Progresso;
+                    trilhasDaCarreira.forEach((tId: any) => {
+                        const tInscrita = alunoTrilhas.find(at => String(at.ID_Trilha) === String(tId));
+                        if (tInscrita) {
+                            somaProgresso += tInscrita.Progresso;
+                            trilhasDetalhadas.push(tInscrita);
+                        } else {
+                            const tNaoInscrita = todasTrilhas.find(t => String(t.ID_Trilha) === String(tId));
+                            if (tNaoInscrita) trilhasDetalhadas.push({ ...tNaoInscrita, Progresso: 0, Cursos: [] });
+                        }
                     });
                     progressoCarreira = Math.floor(somaProgresso / trilhasDaCarreira.length);
                 }
-                alunoCarreiras.push({ ...carreira, Progresso: progressoCarreira });
+                alunoCarreiras.push({ ...carreira, Progresso: progressoCarreira, Trilhas: trilhasDetalhadas });
             } else {
                 carreirasRestantes.push(carreira);
             }
@@ -113,10 +141,10 @@ export const PainelAlunoPages = () => {
         setCursosDisponiveis(todosCursos.filter(c => !cursosJaMatriculadosIds.includes(c.ID_Curso)));
 
         // Assinatura
-        const assins = ServicoArmazenamento.getByProperty('Assinaturas', 'ID_Usuario', userId);
+        const assins = await ServicoArmazenamento.getByProperty('Assinaturas', 'ID_Usuario', userId);
         if (assins.length > 0) {
             const planoId = assins[0].ID_Plano;
-            const plan = ServicoArmazenamento.getById('Planos', 'ID_Plano', planoId);
+            const plan = await ServicoArmazenamento.getById('Planos', 'ID_Plano', planoId);
             setAssinatura({ ...assins[0], Plano: plan });
         }
     };
@@ -126,108 +154,114 @@ export const PainelAlunoPages = () => {
         navigate('/login');
     };
 
-    const simularMatriculaCurso = (idCurso: number) => {
+    const simularMatriculaCurso = async (idCurso: number) => {
         if (!usuarioLogado) return;
-        const mats = ServicoArmazenamento.getByProperty('Matriculas', 'ID_Usuario', usuarioLogado.ID_Usuario);
+        const mats = await ServicoArmazenamento.getByProperty('Matriculas', 'ID_Usuario', usuarioLogado.ID_Usuario);
         if (!mats.some(m => m.ID_Curso === idCurso)) {
             const novaMat = new Matricula(0, usuarioLogado.ID_Usuario, idCurso);
-            ServicoArmazenamento.insert('Matriculas', novaMat);
+            await ServicoArmazenamento.insert('Matriculas', novaMat);
         }
     };
 
-    const inscreverCurso = (idCurso: number) => {
-        simularMatriculaCurso(idCurso);
-        loadData(usuarioLogado.ID_Usuario);
+    const inscreverCurso = async (idCurso: number) => {
+        await simularMatriculaCurso(idCurso);
+        await loadData(usuarioLogado.ID_Usuario);
         setShowModal(false);
     };
 
-    const inscreverTrilha = (idTrilha: number) => {
+    const inscreverTrilha = async (idTrilha: number) => {
         if (!usuarioLogado) return;
         
-        // Registrar matricula específica na Trilha
-        const matsTrilha = ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', usuarioLogado.ID_Usuario);
+        const matsTrilha = await ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', usuarioLogado.ID_Usuario);
         if (!matsTrilha.some(m => m.ID_Trilha === idTrilha)) {
-            ServicoArmazenamento.insert('Matriculas_Trilhas', { ID_MatriculaTrilha: 0, ID_Usuario: usuarioLogado.ID_Usuario, ID_Trilha: idTrilha });
+            await ServicoArmazenamento.insert('Matriculas_Trilhas', { ID_MatriculaTrilha: 0, ID_Usuario: usuarioLogado.ID_Usuario, ID_Trilha: idTrilha });
         }
 
-        const cursosDaTrilha = ServicoArmazenamento.getByProperty('Trilhas_Cursos', 'ID_Trilha', idTrilha).map((tc: any) => tc.ID_Curso);
+        const cursosDaTrilhaRaw = await ServicoArmazenamento.getByProperty('Trilhas_Cursos', 'ID_Trilha', idTrilha);
+        const cursosDaTrilha = cursosDaTrilhaRaw.map((tc: any) => tc.ID_Curso);
+        
         if (cursosDaTrilha.length === 0) {
             alert('Esta trilha ainda não possui cursos vinculados pelo Administrador.');
         } else {
-            cursosDaTrilha.forEach((idCurso: number) => simularMatriculaCurso(idCurso));
+            for (const idCurso of cursosDaTrilha) {
+                 await simularMatriculaCurso(idCurso);
+            }
         }
         
-        loadData(usuarioLogado.ID_Usuario);
+        await loadData(usuarioLogado.ID_Usuario);
         setShowModal(false);
     };
 
-    const inscreverCarreira = (idCarreira: number) => {
+    const inscreverCarreira = async (idCarreira: number) => {
         if (!usuarioLogado) return;
 
-        // Registrar matricula específica na Carreira
-        const matsCarreira = ServicoArmazenamento.getByProperty('Matriculas_Carreiras', 'ID_Usuario', usuarioLogado.ID_Usuario);
+        const matsCarreira = await ServicoArmazenamento.getByProperty('Matriculas_Carreiras', 'ID_Usuario', usuarioLogado.ID_Usuario);
         if (!matsCarreira.some(m => m.ID_Carreira === idCarreira)) {
-            ServicoArmazenamento.insert('Matriculas_Carreiras', { ID_MatriculaCarreira: 0, ID_Usuario: usuarioLogado.ID_Usuario, ID_Carreira: idCarreira });
+            await ServicoArmazenamento.insert('Matriculas_Carreiras', { ID_MatriculaCarreira: 0, ID_Usuario: usuarioLogado.ID_Usuario, ID_Carreira: idCarreira });
         }
 
-        const trilhasDaCarreira = ServicoArmazenamento.getByProperty('Carreiras_Trilhas', 'ID_Carreira', idCarreira).map((ct: any) => ct.ID_Trilha);
+        const trilhasDaCarreiraRaw = await ServicoArmazenamento.getByProperty('Carreiras_Trilhas', 'ID_Carreira', idCarreira);
+        const trilhasDaCarreira = trilhasDaCarreiraRaw.map((ct: any) => ct.ID_Trilha);
+        
         if (trilhasDaCarreira.length === 0) {
             alert('Esta carreira ainda não possui trilhas vinculadas pelo Administrador.');
         } else {
             let encontrouCursos = false;
-            trilhasDaCarreira.forEach((idTrilha: number) => {
-                const cursosDaTrilha = ServicoArmazenamento.getByProperty('Trilhas_Cursos', 'ID_Trilha', idTrilha).map((tc: any) => tc.ID_Curso);
+            for (const idTrilha of trilhasDaCarreira) {
+                const cursosDaTrilhaRaw = await ServicoArmazenamento.getByProperty('Trilhas_Cursos', 'ID_Trilha', idTrilha);
+                const cursosDaTrilha = cursosDaTrilhaRaw.map((tc: any) => tc.ID_Curso);
                 if (cursosDaTrilha.length > 0) encontrouCursos = true;
                 
-                // Inscrever na trilha recursivamente também garante a hierarquia
-                const matsTrilha = ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', usuarioLogado.ID_Usuario);
+                const matsTrilha = await ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', usuarioLogado.ID_Usuario);
                 if (!matsTrilha.some(m => m.ID_Trilha === idTrilha)) {
-                    ServicoArmazenamento.insert('Matriculas_Trilhas', { ID_MatriculaTrilha: 0, ID_Usuario: usuarioLogado.ID_Usuario, ID_Trilha: idTrilha });
+                    await ServicoArmazenamento.insert('Matriculas_Trilhas', { ID_MatriculaTrilha: 0, ID_Usuario: usuarioLogado.ID_Usuario, ID_Trilha: idTrilha });
                 }
-                cursosDaTrilha.forEach((idCurso: number) => simularMatriculaCurso(idCurso));
-            });
+                for (const idCurso of cursosDaTrilha) {
+                    await simularMatriculaCurso(idCurso);
+                }
+            }
 
             if (!encontrouCursos) {
                 alert('As trilhas desta carreira ainda não possuem cursos vinculados.');
             }
         }
 
-        loadData(usuarioLogado.ID_Usuario);
+        await loadData(usuarioLogado.ID_Usuario);
         setShowModal(false);
     };
 
-    const cancelarMatriculaCurso = (idCurso: number) => {
+    const cancelarMatriculaCurso = async (idCurso: number) => {
         if (!usuarioLogado) return;
         if (window.confirm('Deseja realmente cancelar a inscrição neste curso?')) {
-            const mats = ServicoArmazenamento.getByProperty('Matriculas', 'ID_Usuario', usuarioLogado.ID_Usuario);
+            const mats = await ServicoArmazenamento.getByProperty('Matriculas', 'ID_Usuario', usuarioLogado.ID_Usuario);
             const mat = mats.find(m => m.ID_Curso === idCurso);
             if (mat) {
-                ServicoArmazenamento.delete('Matriculas', 'ID_Matricula', mat.ID_Matricula);
-                loadData(usuarioLogado.ID_Usuario);
+                await ServicoArmazenamento.delete('Matriculas', 'id', mat.id || mat.ID_Matricula);
+                await loadData(usuarioLogado.ID_Usuario);
             }
         }
     };
 
-    const cancelarMatriculaTrilha = (idTrilha: number) => {
+    const cancelarMatriculaTrilha = async (idTrilha: number) => {
         if (!usuarioLogado) return;
-        if (window.confirm('Deseja cancelar a inscrição nesta trilha? (Você continuará com o acesso aos cursos dela, mas a trilha não aparecerá mais no seu painel)')) {
-            const mats = ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', usuarioLogado.ID_Usuario);
+        if (window.confirm('Deseja cancelar a inscrição nesta trilha?')) {
+            const mats = await ServicoArmazenamento.getByProperty('Matriculas_Trilhas', 'ID_Usuario', usuarioLogado.ID_Usuario);
             const mat = mats.find(m => m.ID_Trilha === idTrilha);
             if (mat) {
-                ServicoArmazenamento.delete('Matriculas_Trilhas', 'ID_MatriculaTrilha', mat.ID_MatriculaTrilha);
-                loadData(usuarioLogado.ID_Usuario);
+                await ServicoArmazenamento.delete('Matriculas_Trilhas', 'id', mat.id || mat.ID_MatriculaTrilha);
+                await loadData(usuarioLogado.ID_Usuario);
             }
         }
     };
 
-    const cancelarMatriculaCarreira = (idCarreira: number) => {
+    const cancelarMatriculaCarreira = async (idCarreira: number) => {
         if (!usuarioLogado) return;
-        if (window.confirm('Deseja cancelar a inscrição nesta carreira? (Você continuará com o acesso aos cursos e trilhas individualmente)')) {
-            const mats = ServicoArmazenamento.getByProperty('Matriculas_Carreiras', 'ID_Usuario', usuarioLogado.ID_Usuario);
+        if (window.confirm('Deseja cancelar a inscrição nesta carreira?')) {
+            const mats = await ServicoArmazenamento.getByProperty('Matriculas_Carreiras', 'ID_Usuario', usuarioLogado.ID_Usuario);
             const mat = mats.find(m => m.ID_Carreira === idCarreira);
             if (mat) {
-                ServicoArmazenamento.delete('Matriculas_Carreiras', 'ID_MatriculaCarreira', mat.ID_MatriculaCarreira);
-                loadData(usuarioLogado.ID_Usuario);
+                await ServicoArmazenamento.delete('Matriculas_Carreiras', 'id', mat.id || mat.ID_MatriculaCarreira);
+                await loadData(usuarioLogado.ID_Usuario);
             }
         }
     };
@@ -257,16 +291,16 @@ export const PainelAlunoPages = () => {
                     <div className="collapse navbar-collapse" id="alunoNavbar">
                         <ul className="navbar-nav mx-auto gap-2 text-center mt-3 mt-lg-0">
                             <li className="nav-item">
-                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'meus-cursos' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => setActiveTab('meus-cursos')}>Cursos Individuais</button>
+                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'meus-cursos' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => changeTab('meus-cursos')}>Cursos Individuais</button>
                             </li>
                             <li className="nav-item">
-                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'minhas-trilhas' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => setActiveTab('minhas-trilhas')}>Minhas Trilhas</button>
+                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'minhas-trilhas' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => changeTab('minhas-trilhas')}>Minhas Trilhas</button>
                             </li>
                             <li className="nav-item">
-                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'minhas-carreiras' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => setActiveTab('minhas-carreiras')}>Minhas Carreiras</button>
+                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'minhas-carreiras' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => changeTab('minhas-carreiras')}>Minhas Carreiras</button>
                             </li>
                             <li className="nav-item">
-                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'meu-plano' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => setActiveTab('meu-plano')}>Meu Plano</button>
+                                <button className={`nav-link bg-transparent border-0 fw-bold ${activeTab === 'meu-plano' ? 'active text-primary border-bottom border-primary border-3' : 'text-white'}`} onClick={() => changeTab('meu-plano')}>Meu Plano</button>
                             </li>
                         </ul>
 
@@ -297,8 +331,6 @@ export const PainelAlunoPages = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Abas agora no cabeçalho */}
 
                 <div className="tab-content">
                     {/* Cursos */}
@@ -333,58 +365,133 @@ export const PainelAlunoPages = () => {
                     {/* Trilhas */}
                     {activeTab === 'minhas-trilhas' && (
                         <div className="tab-pane fade show active">
-                            <h4 className="mb-4" style={{ color: 'var(--text-main)' }}>Trilhas em Andamento</h4>
-                            <div className="row g-4">
-                                {minhasTrilhas.length === 0 ? (
-                                    <div className="col-12 text-center text-muted py-5"><p>Você ainda não iniciou nenhuma trilha.</p></div>
-                                ) : (
-                                    minhasTrilhas.map(t => (
-                                        <div className="col-md-4" key={t.ID_Trilha}>
-                                            <div className="card card-custom h-100">
-                                                <div className="card-body">
-                                                    <h5 className="card-title fw-bold">{t.Titulo}</h5>
-                                                    <p className="small text-muted">{t.Descricao}</p>
-                                                    <ProgressBar progress={t.Progresso} />
-                                                    <div className="mt-3 text-end">
-                                                        <button className="btn btn-sm btn-outline-danger" onClick={() => cancelarMatriculaTrilha(t.ID_Trilha)}>
-                                                            <i className="bi bi-x-circle me-1"></i> Sair da Trilha
-                                                        </button>
+                            {trilhaAtiva ? (
+                                <div>
+                                    <button className="btn btn-outline-secondary mb-4" onClick={() => setTrilhaAtiva(null)}>
+                                        <i className="bi bi-arrow-left"></i> Voltar para Trilhas
+                                    </button>
+                                    <h4 className="mb-2" style={{ color: 'var(--text-main)' }}>{trilhaAtiva.Titulo}</h4>
+                                    <p className="text-muted mb-4">{trilhaAtiva.Descricao}</p>
+                                    <ProgressBar progress={trilhaAtiva.Progresso} />
+                                    
+                                    <h5 className="mt-5 mb-4" style={{ color: 'var(--text-main)' }}>Cursos desta Trilha</h5>
+                                    <div className="row g-4">
+                                        {trilhaAtiva.Cursos?.length === 0 ? (
+                                            <div className="col-12 text-muted">Nenhum curso vinculado a esta trilha.</div>
+                                        ) : (
+                                            trilhaAtiva.Cursos?.map((c: any) => (
+                                                <div className="col-md-4" key={c.ID_Curso}>
+                                                    <div className="card card-custom h-100">
+                                                        <div className="card-body d-flex flex-column">
+                                                            <h5 className="card-title fw-bold text-primary-custom">{c.Titulo}</h5>
+                                                            <ProgressBar progress={c.Progresso} />
+                                                            <div className="mt-auto pt-3 d-flex gap-2">
+                                                                <Link to={`/sala_aula?curso=${c.ID_Curso}`} className="btn btn-primary flex-grow-1">Acessar Curso</Link>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <h4 className="mb-4" style={{ color: 'var(--text-main)' }}>Trilhas em Andamento</h4>
+                                    <div className="row g-4">
+                                        {minhasTrilhas.length === 0 ? (
+                                            <div className="col-12 text-center text-muted py-5"><p>Você ainda não iniciou nenhuma trilha.</p></div>
+                                        ) : (
+                                            minhasTrilhas.map(t => (
+                                                <div className="col-md-4" key={t.ID_Trilha}>
+                                                    <div className="card card-custom h-100">
+                                                        <div className="card-body">
+                                                            <h5 className="card-title fw-bold">{t.Titulo}</h5>
+                                                            <p className="small text-muted">{t.Descricao}</p>
+                                                            <ProgressBar progress={t.Progresso} />
+                                                            <div className="mt-3 d-flex gap-2 justify-content-end">
+                                                                <button className="btn btn-sm btn-primary" onClick={() => setTrilhaAtiva(t)}>Acessar Trilha</button>
+                                                                <button className="btn btn-sm btn-outline-danger" onClick={() => cancelarMatriculaTrilha(t.ID_Trilha)}>
+                                                                    <i className="bi bi-x-circle d-md-none"></i> <span className="d-none d-md-inline">Sair da Trilha</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
                     {/* Carreiras */}
                     {activeTab === 'minhas-carreiras' && (
                         <div className="tab-pane fade show active">
-                            <h4 className="mb-4" style={{ color: 'var(--text-main)' }}>Suas Carreiras</h4>
-                            <div className="row g-4">
-                                {minhasCarreiras.length === 0 ? (
-                                    <div className="col-12 text-center text-muted py-5"><p>Você ainda não iniciou nenhuma carreira.</p></div>
-                                ) : (
-                                    minhasCarreiras.map(c => (
-                                        <div className="col-md-4" key={c.ID_Carreira}>
-                                            <div className="card card-custom h-100 border-primary">
-                                                <div className="card-body">
-                                                    <h5 className="card-title fw-bold text-warning">{c.Titulo}</h5>
-                                                    <p className="small text-muted">{c.Descricao}</p>
-                                                    <ProgressBar progress={c.Progresso} />
-                                                    <div className="mt-3 text-end">
-                                                        <button className="btn btn-sm btn-outline-danger" onClick={() => cancelarMatriculaCarreira(c.ID_Carreira)}>
-                                                            <i className="bi bi-x-circle me-1"></i> Sair da Carreira
-                                                        </button>
+                            {carreiraAtiva ? (
+                                <div>
+                                    <button className="btn btn-outline-secondary mb-4" onClick={() => setCarreiraAtiva(null)}>
+                                        <i className="bi bi-arrow-left"></i> Voltar para Carreiras
+                                    </button>
+                                    <h4 className="mb-2" style={{ color: 'var(--warning-color, #ffc107)' }}>{carreiraAtiva.Titulo}</h4>
+                                    <p className="text-muted mb-4">{carreiraAtiva.Descricao}</p>
+                                    <ProgressBar progress={carreiraAtiva.Progresso} />
+                                    
+                                    <h5 className="mt-5 mb-4" style={{ color: 'var(--text-main)' }}>Trilhas desta Carreira</h5>
+                                    <div className="row g-4">
+                                        {carreiraAtiva.Trilhas?.length === 0 ? (
+                                            <div className="col-12 text-muted">Nenhuma trilha vinculada a esta carreira.</div>
+                                        ) : (
+                                            carreiraAtiva.Trilhas?.map((t: any) => (
+                                                <div className="col-md-4" key={t.ID_Trilha}>
+                                                    <div className="card card-custom h-100 border-primary">
+                                                        <div className="card-body d-flex flex-column">
+                                                            <h5 className="card-title fw-bold">{t.Titulo}</h5>
+                                                            <p className="small text-muted mb-4">{t.Descricao}</p>
+                                                            <div className="mt-auto">
+                                                                <ProgressBar progress={t.Progresso} />
+                                                                <div className="mt-3 d-flex gap-2 justify-content-end">
+                                                                    <button className="btn btn-sm btn-primary w-100" onClick={() => { changeTab('minhas-trilhas'); setTrilhaAtiva(t); }}>
+                                                                        Acessar Trilha
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <h4 className="mb-4" style={{ color: 'var(--text-main)' }}>Suas Carreiras</h4>
+                                    <div className="row g-4">
+                                        {minhasCarreiras.length === 0 ? (
+                                            <div className="col-12 text-center text-muted py-5"><p>Você ainda não iniciou nenhuma carreira.</p></div>
+                                        ) : (
+                                            minhasCarreiras.map(c => (
+                                                <div className="col-md-4" key={c.ID_Carreira}>
+                                                    <div className="card card-custom h-100 border-primary">
+                                                        <div className="card-body">
+                                                            <h5 className="card-title fw-bold text-warning">{c.Titulo}</h5>
+                                                            <p className="small text-muted">{c.Descricao}</p>
+                                                            <ProgressBar progress={c.Progresso} />
+                                                            <div className="mt-3 d-flex gap-2 justify-content-end">
+                                                                <button className="btn btn-sm btn-primary" onClick={() => setCarreiraAtiva(c)}>Acessar Carreira</button>
+                                                                <button className="btn btn-sm btn-outline-danger" onClick={() => cancelarMatriculaCarreira(c.ID_Carreira)}>
+                                                                    <i className="bi bi-x-circle d-md-none"></i> <span className="d-none d-md-inline">Sair da Carreira</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -410,7 +517,7 @@ export const PainelAlunoPages = () => {
                 </div>
             </div>
 
-            {/* Modal Matricular (Explorar) */}
+            {/* Modal Matricular */}
             {showModal && (
                 <div className="modal d-block bg-dark bg-opacity-75" tabIndex={-1}>
                     <div className="modal-dialog modal-lg">
@@ -421,7 +528,6 @@ export const PainelAlunoPages = () => {
                             </div>
                             <div className="modal-body border-secondary p-0">
                                 
-                                {/* Sub-Tabs do Modal */}
                                 <ul className="nav nav-pills p-3 border-bottom border-secondary" style={{ gap: '10px' }}>
                                     <li className="nav-item"><button className={`nav-link ${modalTab === 'cursos' ? 'active bg-primary' : 'text-muted'}`} onClick={() => setModalTab('cursos')}>Cursos</button></li>
                                     <li className="nav-item"><button className={`nav-link ${modalTab === 'trilhas' ? 'active bg-primary' : 'text-muted'}`} onClick={() => setModalTab('trilhas')}>Trilhas</button></li>
