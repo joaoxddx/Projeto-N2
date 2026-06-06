@@ -25,11 +25,11 @@ export const AdministracaoPages = () => {
     const [showConteudoModal, setShowConteudoModal] = useState(false);
 
     // Formulários
-    const [cursoForm, setCursoForm] = useState({ ID_Curso: 0, Titulo: '', Descricao: '', ID_Categoria: 1, Nivel: 'Iniciante', ImgUrl: '' });
-    const [trilhaForm, setTrilhaForm] = useState({ ID_Trilha: 0, Titulo: '', Descricao: '', ID_Categoria: 1, cursosSelecionados: [] as number[] });
-    const [planoForm, setPlanoForm] = useState({ ID_Plano: 0, Nome: '', Descricao: '', Preco: 0, DuracaoMeses: 1 });
-    const [categoriaForm, setCategoriaForm] = useState({ ID_Categoria: 0, Nome: '', Descricao: '' });
-    const [carreiraForm, setCarreiraForm] = useState({ ID_Carreira: 0, Titulo: '', Descricao: '', trilhasSelecionadas: [] as number[] });
+    const [cursoForm, setCursoForm] = useState({ ID_Curso: 0 as number | string, Titulo: '', Descricao: '', ID_Categoria: 1, Nivel: 'Iniciante', ImgUrl: '' });
+    const [trilhaForm, setTrilhaForm] = useState({ ID_Trilha: 0 as number | string, Titulo: '', Descricao: '', ID_Categoria: 1, cursosSelecionados: [] as number[] });
+    const [planoForm, setPlanoForm] = useState({ ID_Plano: 0 as number | string, Nome: '', Descricao: '', Preco: 0, DuracaoMeses: 1 });
+    const [categoriaForm, setCategoriaForm] = useState({ ID_Categoria: 0 as number | string, Nome: '', Descricao: '' });
+    const [carreiraForm, setCarreiraForm] = useState({ ID_Carreira: 0 as number | string, Titulo: '', Descricao: '', trilhasSelecionadas: [] as number[] });
     
     // Conteudo Curso (Modulos e Aulas)
     const [cursoSelecionado, setCursoSelecionado] = useState<any>(null);
@@ -74,7 +74,7 @@ export const AdministracaoPages = () => {
     const handleSaveCurso = async (e: React.FormEvent) => {
         e.preventDefault();
         const catId = cursoForm.ID_Categoria || (categorias.length > 0 ? categorias[0].ID_Categoria : 1);
-        const novoCurso = new Curso(cursoForm.ID_Curso, cursoForm.Titulo, cursoForm.Descricao, admin.ID_Usuario, catId, cursoForm.Nivel, null, 0, 0, cursoForm.ImgUrl);
+        const novoCurso = new Curso(cursoForm.ID_Curso as any, cursoForm.Titulo, cursoForm.Descricao, admin.ID_Usuario, catId, cursoForm.Nivel, null, 0, 0, cursoForm.ImgUrl);
         if (cursoForm.ID_Curso && cursoForm.ID_Curso !== 0 && cursoForm.ID_Curso !== '0') {
             await ServicoArmazenamento.update('Cursos', 'ID_Curso', cursoForm.ID_Curso, novoCurso);
         } else {
@@ -138,7 +138,7 @@ export const AdministracaoPages = () => {
     // ===================================
     const handleSaveCategoria = async (e: React.FormEvent) => {
         e.preventDefault();
-        const novaCat = new Categoria(categoriaForm.ID_Categoria, categoriaForm.Nome, categoriaForm.Descricao);
+        const novaCat = new Categoria(categoriaForm.ID_Categoria as any, categoriaForm.Nome, categoriaForm.Descricao);
         if (categoriaForm.ID_Categoria && categoriaForm.ID_Categoria !== 0 && categoriaForm.ID_Categoria !== '0') {
             await ServicoArmazenamento.update('Categorias', 'ID_Categoria', categoriaForm.ID_Categoria, novaCat);
         } else {
@@ -167,7 +167,7 @@ export const AdministracaoPages = () => {
     const handleSaveTrilha = async (e: React.FormEvent) => {
         e.preventDefault();
         const catId = trilhaForm.ID_Categoria || (categorias.length > 0 ? categorias[0].ID_Categoria : 1);
-        const novaTrilha = new Trilha(trilhaForm.ID_Trilha, trilhaForm.Titulo, trilhaForm.Descricao, catId);
+        const novaTrilha = new Trilha(trilhaForm.ID_Trilha as any, trilhaForm.Titulo, trilhaForm.Descricao, catId);
         
         let targetTrilhaId = trilhaForm.ID_Trilha;
         if (trilhaForm.ID_Trilha && trilhaForm.ID_Trilha !== 0 && trilhaForm.ID_Trilha !== '0') {
@@ -188,7 +188,7 @@ export const AdministracaoPages = () => {
         }
 
         for (let i = 0; i < trilhaForm.cursosSelecionados.length; i++) {
-            await ServicoArmazenamento.insert('Trilhas_Cursos', new TrilhaCurso(targetTrilhaId, trilhaForm.cursosSelecionados[i], i + 1));
+            await ServicoArmazenamento.insert('Trilhas_Cursos', new TrilhaCurso(targetTrilhaId as any, trilhaForm.cursosSelecionados[i], i + 1));
         }
 
         setShowTrilhaModal(false);
@@ -215,7 +215,7 @@ export const AdministracaoPages = () => {
     // ===================================
     const handleSaveCarreira = async (e: React.FormEvent) => {
         e.preventDefault();
-        const novaCarreira = new Carreira(carreiraForm.ID_Carreira, carreiraForm.Titulo, carreiraForm.Descricao);
+        const novaCarreira = new Carreira(carreiraForm.ID_Carreira as any, carreiraForm.Titulo, carreiraForm.Descricao);
         
         let targetCarreiraId = carreiraForm.ID_Carreira;
         if (carreiraForm.ID_Carreira && carreiraForm.ID_Carreira !== 0 && carreiraForm.ID_Carreira !== '0') {
@@ -231,7 +231,7 @@ export const AdministracaoPages = () => {
         }
 
         for (let i = 0; i < carreiraForm.trilhasSelecionadas.length; i++) {
-            await ServicoArmazenamento.insert('Carreiras_Trilhas', new CarreiraTrilha(targetCarreiraId, carreiraForm.trilhasSelecionadas[i], i + 1));
+            await ServicoArmazenamento.insert('Carreiras_Trilhas', new CarreiraTrilha(targetCarreiraId as any, carreiraForm.trilhasSelecionadas[i] as any, i + 1));
         }
 
         setShowCarreiraModal(false);

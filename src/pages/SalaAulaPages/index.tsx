@@ -182,7 +182,7 @@ export const SalaAulaPages = () => {
                     </div>
                     
                     <div className="flex-grow-1">
-                        {modulos.map((m, mIdx) => {
+                        {modulos.map((m) => {
                             const aulasModulo = aulas.filter(a => String(a.ID_Modulo) === String(m.ID_Modulo));
                             if (aulasModulo.length === 0) return null;
                             
