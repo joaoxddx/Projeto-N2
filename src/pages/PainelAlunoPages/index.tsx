@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ServicoArmazenamento } from '../../services/ServicoArmazenamento';
-import { Matricula } from '../../models/Entidades';
+import { Matricula } from '../../models';
 
 export const PainelAlunoPages = () => {
     const navigate = useNavigate();

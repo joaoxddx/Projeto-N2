@@ -3,7 +3,7 @@ import { Nav } from '../../components/Nav';
 import { Footer } from '../../components/Footer';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { ServicoArmazenamento } from '../../services/ServicoArmazenamento';
-import { Assinatura, Pagamento } from '../../models/Entidades';
+import { Assinatura, Pagamento } from '../../models';
 
 export const PagamentoPages = () => {
     const location = useLocation();

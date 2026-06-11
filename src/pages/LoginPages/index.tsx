@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ServicoArmazenamento } from '../../services/ServicoArmazenamento';
-import { Usuario } from '../../models/Entidades';
+import { Usuario } from '../../models';
 
 export const LoginPages = () => {
     const [loginEmail, setLoginEmail] = useState('');
@@ -73,10 +73,10 @@ export const LoginPages = () => {
 
                     <ul className="nav nav-pills nav-justified mb-4" role="tablist">
                         <li className="nav-item" role="presentation">
-                            <button className={`nav-link w-100 ${activeTab === 'login' ? 'active bg-primary-custom text-white' : 'text-muted'}`} onClick={() => setActiveTab('login')} type="button" style={{ borderRadius: '8px' }}>Entrar</button>
+                            <button className={`nav-link w-100 ${activeTab === 'login' ? 'active bg-primary-custom text-white' : 'text-muted'}`} onClick={() => { setActiveTab('login'); setAlertMsg(null); }} type="button" style={{ borderRadius: '8px' }}>Entrar</button>
                         </li>
                         <li className="nav-item" role="presentation">
-                            <button className={`nav-link w-100 ${activeTab === 'register' ? 'active bg-primary-custom text-white' : 'text-muted'}`} onClick={() => setActiveTab('register')} type="button" style={{ borderRadius: '8px' }}>Cadastrar</button>
+                            <button className={`nav-link w-100 ${activeTab === 'register' ? 'active bg-primary-custom text-white' : 'text-muted'}`} onClick={() => { setActiveTab('register'); setAlertMsg(null); }} type="button" style={{ borderRadius: '8px' }}>Cadastrar</button>
                         </li>
                     </ul>
                     

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ServicoArmazenamento } from '../../services/ServicoArmazenamento';
-import { ProgressoAula } from '../../models/Entidades';
+import { ProgressoAula } from '../../models';
 
 export const SalaAulaPages = () => {
     const navigate = useNavigate();
@@ -201,7 +201,7 @@ export const SalaAulaPages = () => {
                                                     key={aula.id || aula.ID_Aula} 
                                                     className={`list-group-item list-group-item-action py-3 px-4 ${isAtual ? 'active border-0' : 'bg-transparent border-0 border-bottom border-secondary'}`}
                                                     onClick={() => setAulaAtual(aula)}
-                                                    style={{ 
+                                                    style={{      
                                                         color: isAtual ? '#fff' : 'var(--text-main)', 
                                                         backgroundColor: isAtual ? 'var(--primary-color)' : 'transparent',
                                                         transition: 'all 0.2s'
