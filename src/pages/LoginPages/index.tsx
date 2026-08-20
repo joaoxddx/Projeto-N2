@@ -15,7 +15,7 @@ export const LoginPages = () => {
 
     const navigate = useNavigate();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const login = async (e: React.FormEvent) => {
         e.preventDefault();
         const users = await ServicoArmazenamento.getAll('Usuarios');
         const user = users.find((u: any) => u.Email === loginEmail && u.SenhaHash === loginSenha);
@@ -32,7 +32,7 @@ export const LoginPages = () => {
         }
     };
 
-    const handleRegister = async (e: React.FormEvent) => {
+    const registro = async (e: React.FormEvent) => {
         e.preventDefault();
         const users = await ServicoArmazenamento.getAll('Usuarios');
         
@@ -89,7 +89,7 @@ export const LoginPages = () => {
                                     <h3 className="fw-bold" style={{ color: 'var(--text-main)' }}>Bem-vindo(a) de volta!</h3>
                                     <p className="small" style={{ color: 'var(--text-muted)' }}>Acesse minicurso de demonstração padrão como `admin@formapro.com`(admin123) ou `aluno@formapro.com`(aluno123).</p>
                                 </div>
-                                <form onSubmit={handleLogin}>
+                                <form onSubmit={login}>
                                     <div className="mb-3">
                                         <label className="form-label">Email</label>
                                         <input type="email" className="form-control" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
@@ -103,14 +103,14 @@ export const LoginPages = () => {
                             </div>
                         )}
 
-                        {/* REGISTER FORM */}
+                        {/* REGISTRO FORM */}
                         {activeTab === 'register' && (
                             <div className="tab-pane fade show active">
                                 <div className="text-center mb-4">
                                     <h3 className="fw-bold" style={{ color: 'var(--text-main)' }}>Crie sua Conta</h3>
                                     <p className="small" style={{ color: 'var(--text-muted)' }}>Preencha os dados e escolha seu perfil</p>
                                 </div>
-                                <form onSubmit={handleRegister}>
+                                <form onSubmit={registro}>
                                     <div className="mb-3">
                                         <label className="form-label">Nome Completo</label>
                                         <input type="text" className="form-control" value={regNome} onChange={(e) => setRegNome(e.target.value)} required />
